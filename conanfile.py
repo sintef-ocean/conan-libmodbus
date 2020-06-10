@@ -3,6 +3,7 @@
 
 from conans import ConanFile, CMake, AutoToolsBuildEnvironment, tools
 import shutil
+import os
 
 class LibmodbusConan(ConanFile):
     name = "libmodbus"
