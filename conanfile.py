@@ -6,7 +6,6 @@ import shutil
 
 class LibmodbusConan(ConanFile):
     name = "libmodbus"
-    version = "3.1.6"
     license = "LGPL-2.1"
     url = "https://github.com/joakimono/conan-libmodbus"
     homepage = "http://libmodbus.org"
@@ -21,7 +20,7 @@ class LibmodbusConan(ConanFile):
     build_subfolder = "build_subfolder"
 
     def source(self):
-
+        self.version = tools.load(self.recipe_folder + os.sep + "version.txt").strip()
         self.run("git clone --depth 1 -b v{0} https://github.com/stephane/libmodbus.git".format(self.version))
         #self.run("git clone https://github.com/stephane/libmodbus.git")
         #self.run("cd {} && git checkout df7d633fd98a1cfaf698d41af50ddd095e64d053".format(self.source_subfolder))
