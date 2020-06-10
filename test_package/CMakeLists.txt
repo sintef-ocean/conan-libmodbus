@@ -1,0 +1,5 @@
+cmake_minimum_required(VERSION 3.1.2)
+project(LibModbusTest CXX)
+find_package(LIBMODBUS REQUIRED)
+add_executable(example example.cpp)
+target_link_libraries(example LIBMODBUS::LIBMODBUS)

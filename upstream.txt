@@ -1,0 +1,1 @@
+https://github.com/joakimono/conan-libmodbus
