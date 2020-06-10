@@ -19,8 +19,10 @@ class LibmodbusConan(ConanFile):
     source_subfolder = "libmodbus"
     build_subfolder = "build_subfolder"
 
-    def source(self):
+    def set_version(self):
         self.version = tools.load(self.recipe_folder + os.sep + "version.txt").strip()
+
+    def source(self):
         self.run("git clone --depth 1 -b v{0} https://github.com/stephane/libmodbus.git".format(self.version))
         #self.run("git clone https://github.com/stephane/libmodbus.git")
         #self.run("cd {} && git checkout df7d633fd98a1cfaf698d41af50ddd095e64d053".format(self.source_subfolder))
