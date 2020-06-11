@@ -4,7 +4,7 @@
 #include "modbus/modbus.h"
 
 int main() {
-  
+
     if(modbus_get_slave(NULL) == -1)
     {
       std::cout << "Modbus package might work" << std::endl;
@@ -12,5 +12,5 @@ int main() {
     }
     else
       return EXIT_FAILURE;
-    
+
 }

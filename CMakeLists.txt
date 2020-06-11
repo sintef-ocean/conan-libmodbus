@@ -37,7 +37,7 @@ set(CURRENT_SRC
     config.h
    )
 
-   
+
 set(LIB_PREFIX "lib")
 
 if(BUILD_SHARED_LIBS)
@@ -57,7 +57,7 @@ if(MSVC)
   target_link_libraries(${TARGET} ws2_32)
 endif()
 
-set_target_properties(${TARGET} 
+set_target_properties(${TARGET}
   PROPERTIES
     PUBLIC_HEADER "${CURRENT_PUBLIC_HEADERS}"
     PREFIX "${LIB_PREFIX}"
@@ -81,12 +81,12 @@ install(TARGETS ${TARGET}
         RUNTIME DESTINATION bin
         PUBLIC_HEADER DESTINATION ${INCLUDE_INSTALL_DIR}
         )
-        
+
 configure_package_config_file (
     "${CMAKE_SOURCE_DIR}/project-config.cmake.in"
     ${configFile}
     INSTALL_DESTINATION ${cmakeFilesInstallDir}
     PATH_VARS exportFileConfig INCLUDE_INSTALL_DIR )
-    
+
 install (FILES ${configFile} DESTINATION ${cmakeFilesInstallDir})
 install (EXPORT ${exportTarget} DESTINATION ${cmakeFilesInstallDir})

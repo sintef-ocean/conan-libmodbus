@@ -5,18 +5,22 @@ from conans import ConanFile, CMake, AutoToolsBuildEnvironment, tools
 import shutil
 import os
 
+
 class LibmodbusConan(ConanFile):
     name = "libmodbus"
     license = "LGPL-2.1"
-    url = "https://github.com/joakimono/conan-libmodbus"
+    url = "https://github.com/sintef-ocean/conan-libmodbus"
     homepage = "http://libmodbus.org"
     author = "Joakim Haugen (joakim.haugen@gmail.com)"
-    description = "libmodbus is a free software library to send/receive data with a device which respects the Modbus protocol."
+    description = \
+        "libmodbus is a free software library to send/receive data with a "\
+        "device which respects the Modbus protocol."
+    topics = ("modbus", "communication", "protocol")
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False]}
     default_options = "shared=False"
     generators = "cmake"
-    exports_sources = ["extra/*" , "CMakeLists.txt"]
+    exports_sources = ["extra/*", "CMakeLists.txt"]
     source_subfolder = "libmodbus"
     build_subfolder = "build_subfolder"
 
@@ -25,8 +29,6 @@ class LibmodbusConan(ConanFile):
 
     def source(self):
         self.run("git clone --depth 1 -b v{0} https://github.com/stephane/libmodbus.git".format(self.version))
-        #self.run("git clone https://github.com/stephane/libmodbus.git")
-        #self.run("cd {} && git checkout df7d633fd98a1cfaf698d41af50ddd095e64d053".format(self.source_subfolder))
 
     def build(self):
         if self.settings.compiler == "Visual Studio":
@@ -36,7 +38,7 @@ class LibmodbusConan(ConanFile):
                         self.source_folder + "/{}/config.h".format(self.source_subfolder))
             shutil.move(self.source_folder + "/extra/project-config.cmake.in",
                         self.source_folder + "/{}/project-config.cmake.in".format(self.source_subfolder))
-            tools.patch(patch_file = self.source_folder + "/extra/modbus.patch",
+            tools.patch(patch_file=self.source_folder + "/extra/modbus.patch",
                         base_path=self.source_subfolder)
             cmake = CMake(self)
             cmake.configure(source_folder=self.source_subfolder, build_folder = self.build_subfolder)
@@ -70,7 +72,7 @@ class LibmodbusConan(ConanFile):
 
     def package_info(self):
         if self.settings.compiler == "Visual Studio":
-            if self.options.shared == True:
+            if self.options.shared is True:
                 self.cpp_info.libs = ["modbus"]
             else:
                 self.cpp_info.libs = ["libmodbus", "ws2_32"]

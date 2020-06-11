@@ -1,8 +1,9 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from conans import ConanFile, CMake, tools
+from conans import ConanFile, CMake
 import os
+
 
 class LibmodbusTestConan(ConanFile):
     settings = "os", "compiler", "build_type", "arch"
@@ -14,14 +15,15 @@ class LibmodbusTestConan(ConanFile):
         cmake.build()
 
     def imports(self):
-        self.copy("*.lib" ,dst="lib", src="lib")
+        self.copy("*.lib", dst="lib", src="lib")
         self.copy("*.dll", dst="bin", src="bin")
         self.copy("*.dylib*", dst="bin", src="lib")
         self.copy('*.so*', dst='bin', src='lib')
 
     def test(self):
         if self.settings.os == "Windows":
-            path = self.build_folder + os.sep + str(self.settings.build_type) + os.sep
+            path = self.build_folder + os.sep \
+                + str(self.settings.build_type) + os.sep
             self.run("%sexample.exe" % path)
         else:
             self.run(".%sexample" % os.sep)
