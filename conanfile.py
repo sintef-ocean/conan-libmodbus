@@ -82,7 +82,7 @@ class LibmodbusConan(ConanFile):
         else:
             self.cpp_info.libs = ["modbus"]
         self.cpp_info.includedirs = ["include", "include/modbus"]
-        self.cpp_info.name = "LIBMODBUS"
+        self.cpp_info.name = "Libmodbus"
 
     def configure(self):
         del self.settings.compiler.libcxx

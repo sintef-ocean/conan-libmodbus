@@ -38,10 +38,10 @@ The package is usually consumed using the `conan install` command or a *conanfil
    cmake_minimum_required(VERSION 3.13)
    project(TheProject CXX)
 
-   find_package(LIBMODBUS REQUIRED)
+   find_package(Libmodbus REQUIRED)
 
    add_executable(the_executor code.cpp)
-   target_link_libraries(the_executor LIBMODBUS::LIBMODBUS)
+   target_link_libraries(the_executor Libmodbus::Libmodbus)
    ```
    Then, do
    ```bash
