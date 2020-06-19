@@ -11,7 +11,7 @@ class LibmodbusConan(ConanFile):
     license = "LGPL-2.1"
     url = "https://github.com/sintef-ocean/conan-libmodbus"
     homepage = "http://libmodbus.org"
-    author = "Joakim Haugen (joakim.haugen@gmail.com)"
+    author = "SINTEF Ocean"
     description = \
         "libmodbus is a free software library to send/receive data with a "\
         "device which respects the Modbus protocol."
