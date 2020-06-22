@@ -25,23 +25,30 @@ class LibmodbusConan(ConanFile):
     build_subfolder = "build_subfolder"
 
     def set_version(self):
-        self.version = tools.load(self.recipe_folder + os.sep + "version.txt").strip()
+        self.version = tools.load(
+            self.recipe_folder + os.sep + "version.txt").strip()
 
     def source(self):
-        self.run("git clone --depth 1 -b v{0} https://github.com/stephane/libmodbus.git".format(self.version))
+        self.run("git clone --depth 1 -b v{0} "
+                 "https://github.com/stephane/libmodbus.git"
+                 .format(self.version))
 
     def build(self):
         if self.settings.compiler == "Visual Studio":
             shutil.move(self.source_folder + "/CMakeLists.txt",
-                        self.source_folder + "/{}/CMakeLists.txt".format(self.source_subfolder))
+                        self.source_folder + "/{}/CMakeLists.txt"
+                        .format(self.source_subfolder))
             shutil.move(self.source_folder + "/extra/win_config.h",
-                        self.source_folder + "/{}/config.h".format(self.source_subfolder))
+                        self.source_folder + "/{}/config.h"
+                        .format(self.source_subfolder))
             shutil.move(self.source_folder + "/extra/project-config.cmake.in",
-                        self.source_folder + "/{}/project-config.cmake.in".format(self.source_subfolder))
+                        self.source_folder + "/{}/project-config.cmake.in"
+                        .format(self.source_subfolder))
             tools.patch(patch_file=self.source_folder + "/extra/modbus.patch",
                         base_path=self.source_subfolder)
             cmake = CMake(self)
-            cmake.configure(source_folder=self.source_subfolder, build_folder = self.build_subfolder)
+            cmake.configure(source_folder=self.source_subfolder,
+                            build_folder=self.build_subfolder)
             cmake.build()
             cmake.install()
         else:
@@ -59,10 +66,11 @@ class LibmodbusConan(ConanFile):
             env_build.fpic = True
             with tools.environment_append(env_build.vars):
                 self.run("cd {} && ./autogen.sh".format(self.source_subfolder))
-                self.run("cd {} && ./configure {}{}{}".format(self.source_subfolder,
-                                                              cross_host,
-                                                              shared_static,
-                                                              self.package_folder))
+                self.run("cd {} && ./configure {}{}{}"
+                         .format(self.source_subfolder,
+                                 cross_host,
+                                 shared_static,
+                                 self.package_folder))
                 self.run("cd {} && make".format(self.source_subfolder))
                 self.run("cd {} && make install".format(self.source_subfolder))
 
