@@ -24,6 +24,30 @@ class LibmodbusConan(ConanFile):
     source_subfolder = "libmodbus"
     build_subfolder = "build_subfolder"
 
+    _env_build = None
+    _cmake = None
+
+    def _configure_cmake(self):
+        if self._cmake:
+            return self._cmake
+        self._cmake = CMake(self)
+        self._cmake.configure(source_folder=self.source_subfolder,
+                build_folder=self.build_subfolder)
+        return self._cmake
+
+    def _configure_env_build(self):
+        if self._env_build:
+            return self._env_build
+        self._env_build = AutoToolsBuildEnvironment(self)
+        self._env_build.fpic = True
+        return self._env_build
+
+    def _buildtool_install(self):
+        if self._cmake:
+            self._cmake.install()
+        if self._env_build:
+            self._env_build.install()
+
     def set_version(self):
         self.version = tools.load(
             self.recipe_folder + os.sep + "version.txt").strip()
@@ -46,39 +70,31 @@ class LibmodbusConan(ConanFile):
                         .format(self.source_subfolder))
             tools.patch(patch_file=self.source_folder + "/extra/modbus.patch",
                         base_path=self.source_subfolder)
-            cmake = CMake(self)
-            cmake.configure(source_folder=self.source_subfolder,
-                            build_folder=self.build_subfolder)
+            cmake = self._configure_cmake()
             cmake.build()
-            cmake.install()
         else:
             config_args=[]
             if self.options.shared:
                 config_args.extend(["--enable-shared","--disable-static"])
             else:
                 config_args.extend(["--enable-static","--disable-shared"])
-
             config_args.append("--prefix={}".format(self.package_folder))
-
-            env_build = AutoToolsBuildEnvironment(self)
-            env_build.fpic = True
+            env_build = self._configure_env_build()
             with tools.environment_append(env_build.vars):
                 with tools.chdir(os.path.join(self.source_folder, self.source_subfolder)):
                     self.run("./autogen.sh")
-
             if self.settings.arch != "x86_64" and self.settings.arch != "x86":
                 config_host="{}".format(self.settings.arch)
             else:
                 config_host=False
-
             env_build.configure( \
                     configure_dir=os.path.join(self.source_folder, self.source_subfolder), \
                     args=config_args, \
                     host=config_host)
             env_build.make()
-            env_build.install()
 
     def package(self):
+        self._buildtool_install()
         self.copy("COPYING.LESSER", dst="licenses", src=self.source_subfolder,
                   ignore_case=True, keep_path=False)
 

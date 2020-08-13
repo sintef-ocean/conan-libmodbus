@@ -22,11 +22,9 @@ class LibmodbusTestConan(ConanFile):
 
     def test(self):
         if self.settings.os == "Windows":
-            path = self.build_folder + os.sep \
-                + str(self.settings.build_type) + os.sep
+            path = os.path.join(self.build_folder, str(self.settings.build_type), "")
             if self.options["libmodbus"].shared:
-                runcwd = self.build_folder + os.sep \
-                    + "bin" + os.sep
+                runcwd = os.path.join(self.build_folder, "bin", "")
             else:
                 runcwd = None
             self.run("%sexample.exe" % path, cwd=runcwd)
