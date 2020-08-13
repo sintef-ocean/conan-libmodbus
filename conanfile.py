@@ -84,7 +84,7 @@ class LibmodbusConan(ConanFile):
 
     def package_info(self):
         if self.settings.compiler == "Visual Studio":
-            if self.options.shared is True:
+            if self.options.shared:
                 self.cpp_info.libs = ["modbus"]
             else:
                 self.cpp_info.libs = ["libmodbus", "ws2_32"]
