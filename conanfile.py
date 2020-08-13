@@ -52,27 +52,31 @@ class LibmodbusConan(ConanFile):
             cmake.build()
             cmake.install()
         else:
+            config_args=[]
             if self.options.shared:
-                shared_static = "--enable-shared --prefix "
+                config_args.extend(["--enable-shared","--disable-static"])
             else:
-                shared_static = "--enable-static --prefix "
+                config_args.extend(["--enable-static","--disable-shared"])
 
-            # Assumes that x86 is the host os and building for e.g. armv7
-            if self.settings.arch != "x86_64" or self.settings.arch != "x86":
-                cross_host = "--host={} ".format(self.settings.arch)
-            else:
-                cross_host = ""
+            config_args.append("--prefix={}".format(self.package_folder))
+
             env_build = AutoToolsBuildEnvironment(self)
             env_build.fpic = True
             with tools.environment_append(env_build.vars):
-                self.run("cd {} && ./autogen.sh".format(self.source_subfolder))
-                self.run("cd {} && ./configure {}{}{}"
-                         .format(self.source_subfolder,
-                                 cross_host,
-                                 shared_static,
-                                 self.package_folder))
-                self.run("cd {} && make".format(self.source_subfolder))
-                self.run("cd {} && make install".format(self.source_subfolder))
+                with tools.chdir(os.path.join(self.source_folder, self.source_subfolder)):
+                    self.run("./autogen.sh")
+
+            if self.settings.arch != "x86_64" and self.settings.arch != "x86":
+                config_host="{}".format(self.settings.arch)
+            else:
+                config_host=False
+
+            env_build.configure( \
+                    configure_dir=os.path.join(self.source_folder, self.source_subfolder), \
+                    args=config_args, \
+                    host=config_host)
+            env_build.make()
+            env_build.install()
 
     def package(self):
         self.copy("COPYING.LESSER", dst="licenses", src=self.source_subfolder,
