@@ -18,7 +18,7 @@ class LibmodbusConan(ConanFile):
     topics = ("modbus", "communication", "protocol")
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False]}
-    default_options = "shared=False"
+    default_options = "shared=True"
     generators = "cmake"
     exports_sources = ["extra/*", "CMakeLists.txt"]
     source_subfolder = "libmodbus"
