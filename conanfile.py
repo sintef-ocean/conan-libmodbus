@@ -18,11 +18,35 @@ class LibmodbusConan(ConanFile):
     topics = ("modbus", "communication", "protocol")
     settings = "os", "compiler", "build_type", "arch"
     options = {"shared": [True, False]}
-    default_options = "shared=False"
+    default_options = "shared=True"
     generators = "cmake"
     exports_sources = ["extra/*", "CMakeLists.txt"]
     source_subfolder = "libmodbus"
     build_subfolder = "build_subfolder"
+
+    _env_build = None
+    _cmake = None
+
+    def _configure_cmake(self):
+        if self._cmake:
+            return self._cmake
+        self._cmake = CMake(self)
+        self._cmake.configure(source_folder=self.source_subfolder,
+                build_folder=self.build_subfolder)
+        return self._cmake
+
+    def _configure_env_build(self):
+        if self._env_build:
+            return self._env_build
+        self._env_build = AutoToolsBuildEnvironment(self)
+        self._env_build.fpic = True
+        return self._env_build
+
+    def _buildtool_install(self):
+        if self._cmake:
+            self._cmake.install()
+        if self._env_build:
+            self._env_build.install()
 
     def set_version(self):
         self.version = tools.load(
@@ -46,41 +70,37 @@ class LibmodbusConan(ConanFile):
                         .format(self.source_subfolder))
             tools.patch(patch_file=self.source_folder + "/extra/modbus.patch",
                         base_path=self.source_subfolder)
-            cmake = CMake(self)
-            cmake.configure(source_folder=self.source_subfolder,
-                            build_folder=self.build_subfolder)
+            cmake = self._configure_cmake()
             cmake.build()
-            cmake.install()
         else:
+            config_args=[]
             if self.options.shared:
-                shared_static = "--enable-shared --prefix "
+                config_args.extend(["--enable-shared","--disable-static"])
             else:
-                shared_static = "--enable-static --prefix "
-
-            # Assumes that x86 is the host os and building for e.g. armv7
-            if self.settings.arch != "x86_64" or self.settings.arch != "x86":
-                cross_host = "--host={} ".format(self.settings.arch)
-            else:
-                cross_host = ""
-            env_build = AutoToolsBuildEnvironment(self)
-            env_build.fpic = True
+                config_args.extend(["--enable-static","--disable-shared"])
+            config_args.append("--prefix={}".format(self.package_folder))
+            env_build = self._configure_env_build()
             with tools.environment_append(env_build.vars):
-                self.run("cd {} && ./autogen.sh".format(self.source_subfolder))
-                self.run("cd {} && ./configure {}{}{}"
-                         .format(self.source_subfolder,
-                                 cross_host,
-                                 shared_static,
-                                 self.package_folder))
-                self.run("cd {} && make".format(self.source_subfolder))
-                self.run("cd {} && make install".format(self.source_subfolder))
+                with tools.chdir(os.path.join(self.source_folder, self.source_subfolder)):
+                    self.run("./autogen.sh")
+            if self.settings.arch != "x86_64" and self.settings.arch != "x86":
+                config_host="{}".format(self.settings.arch)
+            else:
+                config_host=False
+            env_build.configure( \
+                    configure_dir=os.path.join(self.source_folder, self.source_subfolder), \
+                    args=config_args, \
+                    host=config_host)
+            env_build.make()
 
     def package(self):
+        self._buildtool_install()
         self.copy("COPYING.LESSER", dst="licenses", src=self.source_subfolder,
                   ignore_case=True, keep_path=False)
 
     def package_info(self):
         if self.settings.compiler == "Visual Studio":
-            if self.options.shared is True:
+            if self.options.shared:
                 self.cpp_info.libs = ["modbus"]
             else:
                 self.cpp_info.libs = ["libmodbus", "ws2_32"]
