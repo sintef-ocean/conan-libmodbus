@@ -1,18 +1,17 @@
 [_![MSVC Conan](https://github.com/sintef-ocean/conan-libmodbus/workflows/MSVC%20Conan/badge.svg)_](https://github.com/sintef-ocean/conan-libmodbus/actions?query=workflow%3A%22MSVC+Conan%22)
 [_![GCC Conan](https://github.com/sintef-ocean/conan-libmodbus/workflows/GCC%20Conan/badge.svg)_](https://github.com/sintef-ocean/conan-libmodbus/actions?query=workflow%3A%22GCC+Conan%22)
 [_![Clang Conan](https://github.com/sintef-ocean/conan-libmodbus/workflows/Clang%20Conan/badge.svg)_](https://github.com/sintef-ocean/conan-libmodbus/actions?query=workflow%3A%22Clang+Conan%22)
-[ ![Download](https://api.bintray.com/packages/sintef-ocean/conan/libmodbus%3Asintef/images/download.svg) ](https://bintray.com/sintef-ocean/conan/libmodbus%3Asintef/_latestVersion)
 
+DEPRECATED! conan-center has a libmodbus package.
 
-The recipe generates library packages, which can be found at [Bintray](https://bintray.com/sintef-ocean/conan/libmodbus%3Asintef/_latestVersion).
 The package is usually consumed using the `conan install` command or a *conanfile.txt*.
 
 ## How to use this package
 
-1. Add remote to conan's package [registry.txt](http://docs.conan.io/en/latest/reference/config_files/registry.txt.html):
+1. Add remote to conan's package [remotes](https://docs.conan.io/en/latest/reference/commands/misc/remote.html?highlight=remotes)
 
    ```bash
-   $ conan remote add sintef https://api.bintray.com/conan/sintef-ocean/conan
+   $ conan remote add sintef https://artifactory.smd.sintef.no/artifactory/conan/conan-local
    ```
 
 2. Using *conanfile.txt* in your project with *cmake*
@@ -21,7 +20,7 @@ The package is usually consumed using the `conan install` command or a *conanfil
 
    ```
    [requires]
-   libmodbus/[>=0.1]@sintef/stable
+   libmodbus/[>=3.1.6]@sintef/stable
 
    [options]
    libmodbus:shared=False # by default
